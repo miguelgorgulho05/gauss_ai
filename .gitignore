@@ -1,6 +1,0 @@
-# ignore everything
-*
-
-# besides main and README
-!main.py
-!README.md
