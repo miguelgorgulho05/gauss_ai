@@ -1,26 +1,22 @@
 import os
-from functools import reduce
+
 
 def get_files_info(working_directory, directory="."):
     base = os.path.abspath(working_directory)
-    full_path = os.path.abspath(os.path.join(base, directory))
-    if not full_path.startswith(base):
-        return f'Error: Cannot list "{directory}" as it is outside the permitted working directory\n' 
-    if not os.path.isdir(full_path):
-        return f'Error: "{directory}" is not a directory\n'
-    
+    target = os.path.abspath(os.path.join(base, directory))
+    if not target.startswith(base):
+        return f"Error: Cannot list {directory} as it is outside the permitted working directory"
+    if not os.path.isdir(target):
+        return f'Error: "{directory}" is not a directory'
     try:
-        contents = os.listdir(full_path)
-    except PermissionError as e:
-        return f"Error: {e}\n"
-
-    listings = ""
-    for item in contents:
-        item_path = os.path.join(full_path, item)
-        try:
-            listing = f"- {item}: file_size={os.path.getsize(item_path)} bytes, is_dir={os.path.isdir(item_path)}"
-            listings += listing + "\n"
-        except PermissionError as e:
-            return listings + f"Error: {e}\n"
-
-    return f"Result for {"current" if directory == "." else f"'{directory}'"}' directory\n" + listings
+        files_info = []
+        for file in os.listdir(target):
+            file_path = os.path.join(target, file)
+            file_size = os.path.getsize(file_path)
+            is_dir = os.path.isdir(file_path)
+            files_info.append(
+                f"- {file}: file_size={file_size} bytes, is_dir={is_dir}"
+            )
+        return "\n".join(files_info)
+    except Exception as e:
+        return f"Error listing files: {e}"
